@@ -9,18 +9,18 @@ const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Configuración de Cloudinary
+// 1. Configuración de Cloudinary (Lee las llaves de Render)
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
     api_key: process.env.CLOUDINARY_API_KEY,
     api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-// Configuración del almacenamiento
+// 2. Configuración del Almacenamiento
 const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
-        folder: 'album-boda', // Carpeta en la nube
+        folder: 'album-boda-final', // Carpeta en la nube
         allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp']
     }
 });
@@ -35,27 +35,27 @@ app.use(express.json());
 // Subir Foto
 app.post('/upload', upload.single('photo'), (req, res) => {
     if (req.file) {
-        // AQUÍ ESTÁ LA CLAVE: Enviamos la ruta completa (path) de Cloudinary
+        // IMPORTANTE: Enviamos 'path' que es la URL completa de Cloudinary
         res.json({ success: true, message: '¡Foto guardada!', filePath: req.file.path });
     } else {
         res.status(400).json({ success: false, message: 'Error al subir.' });
     }
 });
 
-// Ver Fotos
+// Ver Fotos (Galería)
 app.get('/photos', async (req, res) => {
     try {
         const { resources } = await cloudinary.search
-            .expression('folder:album-boda')
+            .expression('folder:album-boda-final')
             .sort_by('created_at', 'desc')
             .max_results(500)
             .execute();
         
-        // Enviamos las URLs seguras completas
+        // Extraemos solo las URLs seguras (https)
         const photoUrls = resources.map(file => file.secure_url);
         res.json(photoUrls);
     } catch (error) {
-        console.error(error);
+        console.error("Error Cloudinary:", error);
         res.status(500).json([]);
     }
 });
@@ -72,7 +72,8 @@ app.delete('/delete/:filename', async (req, res) => {
     }
 
     try {
-        const public_id = `album-boda/${path.parse(filename).name}`;
+        // Buscamos la foto por su nombre en la carpeta
+        const public_id = `album-boda-final/${path.parse(filename).name}`;
         await cloudinary.uploader.destroy(public_id);
         res.json({ success: true, message: 'Foto eliminada.' });
     } catch (error) {
