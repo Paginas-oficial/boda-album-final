@@ -9,18 +9,18 @@ const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// --- CONFIGURACIÓN ---
-// Render leerá estas claves de las Variables de Entorno que configuraremos luego
+// Configuración de Cloudinary
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
     api_key: process.env.CLOUDINARY_API_KEY,
     api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
+// Configuración del almacenamiento
 const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
-        folder: 'album-boda', // Carpeta en la nube donde van las fotos
+        folder: 'album-boda', // Carpeta en la nube
         allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp']
     }
 });
@@ -32,16 +32,17 @@ app.use(express.json());
 
 // --- RUTAS ---
 
-// 1. Subir Foto
+// Subir Foto
 app.post('/upload', upload.single('photo'), (req, res) => {
     if (req.file) {
+        // AQUÍ ESTÁ LA CLAVE: Enviamos la ruta completa (path) de Cloudinary
         res.json({ success: true, message: '¡Foto guardada!', filePath: req.file.path });
     } else {
         res.status(400).json({ success: false, message: 'Error al subir.' });
     }
 });
 
-// 2. Ver Fotos
+// Ver Fotos
 app.get('/photos', async (req, res) => {
     try {
         const { resources } = await cloudinary.search
@@ -50,6 +51,7 @@ app.get('/photos', async (req, res) => {
             .max_results(500)
             .execute();
         
+        // Enviamos las URLs seguras completas
         const photoUrls = resources.map(file => file.secure_url);
         res.json(photoUrls);
     } catch (error) {
@@ -58,8 +60,8 @@ app.get('/photos', async (req, res) => {
     }
 });
 
-// 3. Eliminar Foto
-const ADMIN_PASSWORD = "boda2025"; // <--- CONTRASEÑA PARA BORRAR
+// Eliminar Foto
+const ADMIN_PASSWORD = "boda2025";
 
 app.delete('/delete/:filename', async (req, res) => {
     const { filename } = req.params;
@@ -70,7 +72,6 @@ app.delete('/delete/:filename', async (req, res) => {
     }
 
     try {
-        // Extraemos el nombre sin extensión para Cloudinary
         const public_id = `album-boda/${path.parse(filename).name}`;
         await cloudinary.uploader.destroy(public_id);
         res.json({ success: true, message: 'Foto eliminada.' });
