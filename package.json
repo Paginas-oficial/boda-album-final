@@ -1,7 +1,7 @@
 {
-  "name": "boda-album-backend",
+  "name": "boda-album-final",
   "version": "1.0.0",
-  "description": "Servidor para el album de bodas",
+  "description": "Servidor para el álbum de boda",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
