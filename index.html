@@ -1,5 +1,293 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Boda de Asiria & Miguel</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;500;600&family=Pinyon+Script&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 
+    <style>
+        :root {
+            --color-brown-bg: #965A38; /* Marrón cálido */
+            --color-cream-text: #F9F4E8; 
+            --color-white: #FFFFFF;
+            --color-text-dark: #3E2723;
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Montserrat', sans-serif;
+            --font-script: 'Pinyon Script', cursive;
+        }
+
+        body { margin: 0; padding: 0; font-family: var(--font-body); background-color: var(--color-white); }
+
+        /* --- PORTADA --- */
+        .hero-section {
+            position: relative;
+            height: 90vh;
+            min-height: 600px;
+            background-image: url('https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: var(--color-white);
+        }
+        
+        .hero-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(60, 30, 10, 0.3); 
+        }
+
+        .hero-content { position: relative; z-index: 2; text-align: center; }
+
+        .hero-title {
+            font-family: var(--font-heading); font-size: 5.5em; font-weight: 400;
+            line-height: 1.1; margin: 0; color: #FFFFFF;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+        }
+        
+        .hero-subtitle {
+             font-family: var(--font-heading); font-size: 5.5em; font-weight: 400;
+             line-height: 1.1; margin: 0; display: block; font-style: italic;
+        }
+
+        /* --- INVITACIÓN (Estilo Marrón) --- */
+        .invitation-section {
+            background-color: var(--color-brown-bg);
+            color: var(--color-cream-text);
+            padding: 100px 100px;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        .invitation-container {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 60px; max-width: 1300px; width: 100%; align-items: center;
+        }
+
+        .invite-left h2 {
+            font-family: var(--font-heading); font-size: 5em; font-weight: 400;
+            line-height: 1.1; margin-bottom: 30px; margin-top: 0; color: var(--color-cream-text);
+        }
+
+        .invite-text {
+            font-size: 1.1em; line-height: 1.6; opacity: 0.9; font-weight: 300; max-width: 400px;
+        }
+        
+        .rings {
+        width: 150px;height: 150px;
+        margin: 0 auto;
+        display: block;}
+
+    
+        .invite-right h3 {
+            font-family: var(--font-heading); font-size: 1.9em; font-weight: 400;
+            line-height: 1.3; margin-top: 0; margin-bottom: 30px; color: var(--color-cream-text);
+        }
+
+        /* --- GALERÍA --- */
+        .gallery-upload-section { padding: 100px 0; background-color: #FAF7F0; text-align: center; }
+        .section-title { font-family: var(--font-heading); font-size: 3em; color: var(--color-text-dark); margin-bottom: 30px; }
+
+        #upload-container {
+            background: var(--color-white); padding: 40px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.05); max-width: 500px; margin: 0 auto 60px;
+            border: 1px solid #EAEAEA;
+        }
+
+        .custom-file-upload {
+            border: 1px solid var(--color-brown-bg); display: inline-block; padding: 15px 40px;
+            cursor: pointer; font-weight: 500; color: var(--color-brown-bg); background: transparent;
+        }
+        .custom-file-upload:hover { background: var(--color-brown-bg); color: var(--color-white); }
+
+        button#submit-btn {
+            background-color: var(--color-brown-bg); color: var(--color-white); border: none;
+            padding: 15px 40px; cursor: pointer; font-family: var(--font-body); letter-spacing: 2px; margin-top: 20px;
+        }
+
+        #gallery {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px; margin-top: 50px; max-width: 1200px; margin: 50px auto; padding: 0 20px;
+        }
+
+        .gallery-item {
+            position: relative; overflow: hidden; background: var(--color-white);
+            padding: 10px; transition: transform 0.3s ease; box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        }
+        .gallery-item:hover { transform: translateY(-5px); }
+
+        .gallery-img { width: 100%; height: 350px; object-fit: cover; cursor: pointer; }
+
+        .delete-btn {
+            position: absolute; top: 20px; right: 20px; background: rgba(255, 255, 255, 0.9);
+            color: #b00; border: none; width: 30px; height: 30px; border-radius: 50%;
+            cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center;
+            opacity: 0; transition: opacity 0.3s;
+        }
+        .gallery-item:hover .delete-btn { opacity: 1; }
+
+        /* Modal */
+        .modal { display: none; position: fixed; z-index: 2000; padding-top: 40px; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95); }
+        .modal-content { margin: auto; display: block; max-width: 90%; max-height: 90vh; object-fit: contain; }
+        .close { position: absolute; top: 30px; right: 50px; color: #f1f1f1; font-size: 60px; font-weight: 300; cursor: pointer; }
+
+        @media (max-width: 1000px) {
+            .invitation-container { grid-template-columns: 1fr; text-align: center; gap: 40px; }
+            .invite-center { order: -1; margin-bottom: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- PORTADA -->
+    <header class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1 class="hero-title">Asiria</h1>
+            <h1 class="hero-subtitle">& Miguel</h1>
+        </div>
+    </header>
+
+    <!-- INVITACIÓN (Estilo Marrón) -->
+    <section class="invitation-section">
+        <div class="invitation-container">
+            <div class="invite-left">
+                <h2>Nuestra boda<br>es hoy</h2>
+                
+                
+            </div>
+
+            
             <img class="rings" 
          src="anillos.png" 
          alt="Anillos">
 
+
+            <div class="invite-right">
+                <h3>ESTAMOS ENCANTADOS DE QUE ESTE CON NOSOTROS</h3>
+                <p class="invite-text">Para nosotros es muy importante guardar cada momento. Ayúdanos a crear el álbum digital compartiendo tus mejores fotos en esta página.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- GALERÍA -->
+    <section class="gallery-upload-section">
+        <div class="container-gallery">
+            <h2 class="section-title">Galería de Recuerdos</h2>
+            
+            <div id="upload-container">
+                <form id="upload-form">
+                    <label class="custom-file-upload">
+                        <input type="file" id="photo-input" name="photo" accept="image/*" required>
+                        📷 SELECCIONAR FOTO
+                    </label>
+                    <div id="file-name-display" style="margin-top: 15px; color: #666; font-style: italic;"></div>
+                    <button type="submit" id="submit-btn">COMPARTIR FOTO</button>
+                </form>
+            </div>
+
+            <div id="gallery"></div>
+        </div>
+    </section>
+
+    <div id="myModal" class="modal">
+        <span class="close">&times;</span>
+        <img class="modal-content" id="img01">
+    </div>
+
+    <script>
+        // --- URL DE TU SERVIDOR ---
+        const API_URL = 'https://servidor-boda-asiria.onrender.com'; 
+
+        const uploadForm = document.getElementById('upload-form');
+        const photoInput = document.getElementById('photo-input');
+        const fileNameDisplay = document.getElementById('file-name-display');
+        const submitBtn = document.getElementById('submit-btn');
+        const gallery = document.getElementById('gallery');
+        const modal = document.getElementById("myModal");
+        const modalImg = document.getElementById("img01");
+        const span = document.getElementsByClassName("close")[0];
+
+        photoInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) fileNameDisplay.textContent = "Archivo: " + this.files[0].name;
+        });
+
+        uploadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const file = photoInput.files[0];
+            if(!file) return;
+            const formData = new FormData();
+            formData.append('photo', file);
+            
+            submitBtn.innerText = 'SUBIENDO...';
+            submitBtn.disabled = true;
+
+            try {
+                const res = await fetch(`${API_URL}/upload`, { method: 'POST', body: formData });
+                const data = await res.json();
+                if(data.success) {
+                    alert('¡Gracias! Foto subida.');
+                    addPhotoToGallery(data.filePath); // Usamos la ruta que nos da el servidor
+                    uploadForm.reset();
+                    fileNameDisplay.textContent = '';
+                } else { alert('Error: ' + data.message); }
+            } catch (err) { console.error(err); alert('Error de conexión.'); }
+            finally { submitBtn.innerText = 'COMPARTIR FOTO'; submitBtn.disabled = false; }
+        });
+
+        async function loadPhotos() {
+            try {
+                const res = await fetch(`${API_URL}/photos`);
+                const photos = await res.json();
+                gallery.innerHTML = '';
+                photos.forEach(url => addPhotoToGallery(url));
+            } catch (err) { console.error(err); }
+        }
+
+        async function deletePhoto(filename, div, event) {
+            event.stopPropagation();
+            const password = prompt("Contraseña para eliminar:");
+            if(!password) return;
+            try {
+                const res = await fetch(`${API_URL}/delete/${filename}`, {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password })
+                });
+                const data = await res.json();
+                if(data.success) { div.remove(); alert('Foto eliminada.'); }
+                else { alert(data.message); }
+            } catch (err) { alert('Error de conexión.'); }
+        }
+
+        function addPhotoToGallery(url) {
+            const filename = url.split('/').pop();
+            const div = document.createElement('div');
+            div.className = 'gallery-item';
+            const img = document.createElement('img');
+            
+            // --- CORRECCIÓN CLAVE ---
+            img.src = url; // Usamos la URL directa, sin prefijos
+            
+            img.className = 'gallery-img';
+            img.onclick = () => { modal.style.display = "block"; modalImg.src = url; };
+            
+            const btn = document.createElement('button');
+            btn.innerHTML = '&times;'; btn.className = 'delete-btn';
+            btn.onclick = (e) => deletePhoto(filename, div, e);
+            
+            div.appendChild(img); div.appendChild(btn);
+            gallery.prepend(div);
+        }
+
+        span.onclick = () => modal.style.display = "none";
+        window.onclick = (e) => { if(e.target == modal) modal.style.display = "none"; }
+        window.onload = loadPhotos;
+    </script>
+</body>
+</html>
